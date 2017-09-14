@@ -22,6 +22,7 @@ class Drone:
     x = -1
     y = -1
     closest_zone_id = -1
+    zone_closest_list = []
     move_x = 0
     move_y = 0
 
@@ -70,16 +71,21 @@ while True:
             drone = drones[player_id][drone_id]
             drone.x, drone.y = [ int(i) for i in input().split() ]
             drone.zone_closest = float('inf')
+            drone.zone_closest_list = []
 
             # Calculate distance from zones to drones
             for zone in zones:
                 from_zone = distance(drone.x, drone.y, zone.x, zone.y)
-                if from_zone < drone.zone_closest:
-                    drone.zone_closest = from_zone
-                    drone.move_x = zone.x
-                    drone.move_y = zone.y
+                drone.zone_closest_list.append([zone.zone_id, from_zone])
+
+            drone.zone_closest_list.sort(key=lambda i: i[1])
+            zone = zones[drone.zone_closest_list[0][0]]
+            drone.move_x = zone.x
+            drone.move_y = zone.y
 
 
     # Move the drones
     for drone_id in range(number_of_drones):
         print(drones[my_id][drone_id].move_x, drones[my_id][drone_id].move_y)
+
+        print('drone', drone_id, drones[my_id][drone_id].zone_closest_list, file=sys.stderr)
