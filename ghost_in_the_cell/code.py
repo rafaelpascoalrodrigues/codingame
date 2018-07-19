@@ -40,5 +40,23 @@ while True:
             int(arg_5)
 
 
-    # Any valid action, such as "WAIT" or "MOVE source destination cyborgs"
+    """
+    strategy:
+        send new produced cyborgs to the non onwned factory with few population.
+    """
+    for i in range(factory_count):
+        # owned factories
+        if factory_list[i]['player'] == 1:
+
+            target_id = -1
+            target_population = float('Inf')
+            for j in range(factory_count):
+                # non owned factories
+                if factory_list[j]['player'] != 1:
+                    if factory_list[j]['population'] < target_population:
+                        target_population = factory_list[i]['population']
+                        target_id = j
+                    print("MOVE", i, j, factory_list[i]['production'])
+
+    # send a wait in the end to prevent crash if no move was made
     print("WAIT")
