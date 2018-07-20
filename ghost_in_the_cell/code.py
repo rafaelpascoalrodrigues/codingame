@@ -44,25 +44,31 @@ while True:
     strategy:
         send new produced cyborgs to the non onwned factory with few population.
     """
-    for i in range(factory_count):
+    for factory_owned_id in range(factory_count):
         # owned factories
-        if factory_list[i]['player'] == 1:
+        if factory_list[factory_owned_id]['player'] != 1:
+            # not onwned
+            continue
 
-            target_id = -1
-            target_population = float('Inf')
-            for j in range(factory_count):
-                # non owned factories
-                if factory_list[j]['player'] != 1:
-                    if factory_list[j]['population'] < target_population:
-                        target_population = factory_list[j]['population']
-                        target_id = j
+        factory_owned = factory_list[factory_owned_id]
 
-                    if factory_list[i]['production'] == 0:
-                        deploy = 1 if factory_list[i]['population'] > 1 else 0
+        target_id = -1
+        target_population = float('Inf')
+        for factory_id in range(factory_count):
+            factory = factory_list[factory_id]
+
+            # non owned factories
+            if factory['player'] != 1:
+                if factory['population'] < target_population:
+                    target_population = factory['population']
+                    target_id = factory_id
+
+                    if factory_owned['production'] == 0:
+                        deploy = 1 if factory_owned['population'] > 1 else 0
                     else:
-                        deploy = factory_list[i]['production']
+                        deploy = factory_owned['production']
 
-                    print("MOVE", i, j, deploy, ";", end="")
+                    print("MOVE", factory_owned_id, target_id, deploy, ";", end="")
 
     # send a wait in the end to prevent crash if no move was made
     print("WAIT")
