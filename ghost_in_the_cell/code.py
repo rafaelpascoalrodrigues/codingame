@@ -13,6 +13,11 @@ for i in range(factory_count):
         'links' : [{
             'distance' : -1
         } for i in range(factory_count)],
+        'capture' : {
+            'holding' : 0,
+            'attacking' : 0,
+            'defending' : 0
+        }
     }
 
 
@@ -26,20 +31,48 @@ for i in range(link_count):
 
 # game loop
 while True:
+    # clear data from troops on factories
+    for factory_id in range(factory_count):
+        factory = factory_list[factory_id]
+        factory['capture']['holding'] = 0
+        factory['capture']['attacking'] = 0
+        factory['capture']['defending'] = 0
+
     # retrieve data from entities
     entity_count = int(input())
     for i in range(entity_count):
         entity_id, entity_type, arg_1, arg_2, arg_3, arg_4, arg_5 = input().split()
 
         if entity_type == 'FACTORY':
-            entity = factory_list[int(entity_id)]
-            entity['player'] = int(arg_1)
-            entity['population'] = int(arg_2)
-            entity['production'] = int(arg_3)
+            factory = factory_list[int(entity_id)]
+            factory['player'] = int(arg_1)
+            factory['population'] = int(arg_2)
+            factory['production'] = int(arg_3)
             int(arg_4)
             int(arg_5)
 
 
+        elif entity_type == 'TROOP':
+            player = int(arg_1)
+            factory_from = int(arg_2)
+            factory_destination = int(arg_3)
+            troops_count = int(arg_4)
+            int(arg_5)
+
+            factory = factory_list[factory_destination]
+            if player == -1:
+                if factory['player'] == 1:
+                    factory['capture']['attacking'] += troops_count
+                else:
+                    factory['capture']['defending'] += troops_count
+            else:
+                if factory['player'] == 1:
+                    factory['capture']['defending'] += troops_count
+                else:
+                    factory['capture']['attacking'] += troops_count
+
+
+    print(factory_list, file=sys.stderr)
     """
     strategy:
         send new produced cyborgs to the non onwned factory with few population.
