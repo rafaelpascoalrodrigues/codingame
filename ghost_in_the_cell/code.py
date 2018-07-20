@@ -61,16 +61,14 @@ while True:
 
                 # non owned factories
                 if factory['player'] != 1 and factory['production'] == production_rate:
-                    if factory['population'] < target_population:
-                        target_population = factory['population']
-                        target_id = factory_id
+                    if (factory['population'] + 1) > factory_owned['population']:
+                        continue
 
-                        if factory_owned['production'] == 0:
-                            deploy = 1 if factory_owned['population'] > 1 else 0
-                        else:
-                            deploy = factory_owned['production']
+                    deploy = factory_owned['population'] + 1
+                    target_population = factory['population']
+                    target_id = factory_id
 
-                        print("MOVE", factory_owned_id, target_id, deploy, ";", end="")
+                    print("MOVE", factory_owned_id, target_id, deploy, ";", end="")
 
     # send a wait in the end to prevent crash if no move was made
     print("WAIT")
