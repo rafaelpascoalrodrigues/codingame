@@ -72,7 +72,6 @@ while True:
                     factory['capture']['attacking'] += troops_count
 
 
-    print(factory_list, file=sys.stderr)
     """
     strategy:
         send new produced cyborgs to the non onwned factory with few population.
@@ -85,23 +84,21 @@ while True:
 
         factory_owned = factory_list[factory_owned_id]
 
-        target_id = -1
-        target_population = float('Inf')
-
         for production_rate in [3, 2, 1, 0]:
             for factory_id in range(factory_count):
                 factory = factory_list[factory_id]
 
                 # non owned factories
-                if factory['player'] != 1 and factory['production'] == production_rate and factory_owned['links'][factory_id]['distance'] !=     -1:
-                    if (factory['population'] + 1) > factory_owned['population']:
+                if factory['player'] != 1 and factory['production'] == production_rate and factory_owned['links'][factory_id]['distance'] != -1:
+                    to_capture = factory['population'] + factory['capture']['defending'] - factory['capture']['attacking'] + 1
+                    if factory['player'] != 0:
+                        to_capture += (factory_owned['links'][factory_id]['distance'] * factory['production'])
+                    
+                    to_capture = to_capture if to_capture > 0 else 0
+                    if to_capture >= factory_owned['population']:
                         continue
 
-                    deploy = factory['population'] + 1
-                    target_population = factory['population']
-                    target_id = factory_id
-
-                    print("MOVE", factory_owned_id, target_id, deploy, ";", end="")
+                    print("MOVE", factory_owned_id, factory_id, to_capture, "; ", end="")
 
     # send a wait in the end to prevent crash if no move was made
     print("WAIT")
