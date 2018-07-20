@@ -11,8 +11,10 @@ for i in range(factory_count):
         'population' : 0,
         'production' : 0,
         'links' : [{
+            'factory_id' : i,
             'distance' : -1
         } for i in range(factory_count)],
+        'distance_order' : [],
         'capture' : {
             'holding' : 0,
             'attacking' : 0,
@@ -27,6 +29,22 @@ for i in range(link_count):
     factory_1, factory_2, distance = [int(j) for j in input().split()]
     factory_list[factory_1]['links'][factory_2]['distance'] = distance
     factory_list[factory_2]['links'][factory_1]['distance'] = distance
+
+# sort factory links by distance
+for i in range(factory_count):
+    distances = []
+    for j in range(len(factory_list[i]['links'])):
+        link = factory_list[i]['links'][j]
+        for k in range(len(distances)):
+            if link['distance'] < distances[k]['distance']:
+                distances.insert(k, {'factory_id' : link['factory_id'], 'distance' : link['distance']})
+                link = None
+                break
+
+        if link != None:
+            distances.append({'factory_id' : link['factory_id'], 'distance' : link['distance']})
+
+    factory_list[i]['distance_order'] = [ x['factory_id'] for x in distances ]
 
 
 # game loop
