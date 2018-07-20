@@ -54,7 +54,7 @@ while True:
                 # non owned factories
                 if factory_list[j]['player'] != 1:
                     if factory_list[j]['population'] < target_population:
-                        target_population = factory_list[i]['population']
+                        target_population = factory_list[j]['population']
                         target_id = j
                     print("MOVE", i, j, factory_list[i]['production'])
 
