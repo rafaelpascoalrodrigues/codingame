@@ -60,11 +60,11 @@ while True:
                 factory = factory_list[factory_id]
 
                 # non owned factories
-                if factory['player'] != 1 and factory['production'] == production_rate:
+                if factory['player'] != 1 and factory['production'] == production_rate and factory_owned['links'][factory_id]['distance'] !=     -1:
                     if (factory['population'] + 1) > factory_owned['population']:
                         continue
 
-                    deploy = factory_owned['population'] + 1
+                    deploy = factory['population'] + 1
                     target_population = factory['population']
                     target_id = factory_id
 
