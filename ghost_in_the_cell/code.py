@@ -56,7 +56,7 @@ while True:
                     if factory_list[j]['population'] < target_population:
                         target_population = factory_list[j]['population']
                         target_id = j
-                    print("MOVE", i, j, factory_list[i]['production'])
+                    print("MOVE", i, j, factory_list[i]['production'], ";", end="")
 
     # send a wait in the end to prevent crash if no move was made
     print("WAIT")
