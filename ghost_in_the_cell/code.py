@@ -102,8 +102,8 @@ while True:
 
         factory_owned = factory_list[factory_owned_id]
 
-        for production_rate in [3, 2, 1, 0]:
-            for factory_id in range(factory_count):
+        for production_rate in [3, 2, 1]:
+            for factory_id in factory_owned['distance_order']:
                 factory = factory_list[factory_id]
 
                 # non owned factories
