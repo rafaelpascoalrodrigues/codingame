@@ -69,6 +69,8 @@ while True:
             int(arg_4)
             int(arg_5)
 
+            factory['capture']['holding'] = factory['population']
+
 
         elif entity_type == 'TROOP':
             player = int(arg_1)
@@ -113,9 +115,10 @@ while True:
                         to_capture += (factory_owned['links'][factory_id]['distance'] * factory['production'])
                     
                     to_capture = to_capture if to_capture > 0 else 0
-                    if to_capture >= factory_owned['population']:
+                    if to_capture >= factory_owned['capture']['holding']:
                         continue
 
+                    factory_owned['capture']['holding'] -= to_capture
                     print("MOVE", factory_owned_id, factory_id, to_capture, "; ", end="")
 
     # send a wait in the end to prevent crash if no move was made
