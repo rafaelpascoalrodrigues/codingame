@@ -31,9 +31,9 @@ while True:
         }
 
         if card['location'] == 0:     # card in player hand
-            player_hand+= [card]
+            player_hand += [card]
         elif card['location'] == 1:   # card in player's battlefield
-            player_battefield += [card]
+            player_battlefield += [card]
         elif card['location'] == -1:  # card in player hand
             opponent_battlefield += [card]
         else:                         # something wrong happen
@@ -48,6 +48,11 @@ while True:
         continue
 
     # battle phase
+    for card in player_hand:
+        if card['cost'] <= player_mana:
+            if card['card_type'] == 0:
+                player_mana -= card['cost']
+                print("SUMMON", card['instance_id'], ";", end="")
 
     
     # send a PASS in the end to prevent crash if no action was made
