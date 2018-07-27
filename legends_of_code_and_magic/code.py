@@ -57,6 +57,30 @@ while True:
         continue
 
     # battle phase
+
+    # use itens
+    for card in player_hand:
+        if card['cost'] <= player_mana:
+
+            # green item
+            if card['card_type'] == 1:
+                if len(player_battlefield) > 0 and player_battlefield[0]['card_type'] == 0:
+                    player_mana -= card['cost']
+                    print("USE", card['instance_id'], player_battlefield[0]['instance_id'] ,";", end="")
+
+            # red item
+            elif card['card_type'] == 2:
+                if len(opponent_battlefield) > 0 and opponent_battlefield[0]['card_type'] == 0:
+                    player_mana -= card['cost']
+                    print("USE", card['instance_id'], opponent_battlefield[0]['instance_id'] ,";", end="")
+
+            # blue item
+            elif card['card_type'] == 3:
+                player_mana -= card['cost']
+                print("USE", card['instance_id'], "-1" ,";", end="")
+
+
+    # summon creatures
     for card in player_hand:
         # battlefield card limit
         if len(player_battlefield) >= 6:
@@ -68,6 +92,8 @@ while True:
                 player_mana -= card['cost']
                 print("SUMMON", card['instance_id'], ";", end="")
 
+
+    # attack
     for card in player_battlefield:
         target = -1
         for enemy in opponent_battlefield:
