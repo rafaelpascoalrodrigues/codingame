@@ -59,6 +59,9 @@ while True:
                 player_mana -= card['cost']
                 print("SUMMON", card['instance_id'], ";", end="")
 
+    for card in player_battlefield:
+        print("ATTACK", card['instance_id'], "-1", ";", end="")
+
 
     # send a PASS in the end to prevent crash if no action was made
     print("PASS")
