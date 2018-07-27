@@ -27,7 +27,16 @@ while True:
             'defense' : int(defense),
             'player_health_change' : int(my_health_change),
             'opponent_health_change' : int(opponent_health_change),
-            'card_draw' : int(card_draw)
+            'card_draw' : int(card_draw),
+            'abilities' : {
+                'string' : abilities,
+                'breakthrough' : True if abilities.find('B') != -1 else False,
+                'charge' : True if abilities.find('C') != -1 else False,
+                'guard' : True if abilities.find('G') != -1 else False,
+                'drain' : True if abilities.find('D') != -1 else False,
+                'lethal' : True if abilities.find('L') != -1 else False,
+                'ward' : True if abilities.find('W') != -1 else False
+            }
         }
 
         if card['location'] == 0:     # card in player hand
