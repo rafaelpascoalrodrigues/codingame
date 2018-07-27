@@ -2,31 +2,53 @@ import sys
 import math
 
 
-deck = []
+draft = []
 
 # game loop
 while True:
+    player_hand = []
+    player_battlefield = []
+    opponent_battlefield = []
+
+
     for i in range(2):
         player_health, player_mana, player_deck, player_rune = [int(j) for j in input().split()]
     opponent_hand = int(input())
     card_count = int(input())
     for i in range(card_count):
         card_number, instance_id, location, card_type, cost, attack, defense, abilities, my_health_change, opponent_health_change, card_draw = input().split()
-        card_number = int(card_number)
-        instance_id = int(instance_id)
-        location = int(location)
-        card_type = int(card_type)
-        cost = int(cost)
-        attack = int(attack)
-        defense = int(defense)
-        my_health_change = int(my_health_change)
-        opponent_health_change = int(opponent_health_change)
-        card_draw = int(card_draw)
+        card = {
+            'card_number' : int(card_number),
+            'instance_id' : int(instance_id),
+            'location' : int(location),
+            'card_type' : int(card_type),
+            'cost' : int(cost),
+            'attack' : int(attack),
+            'defense' : int(defense),
+            'player_health_change' : int(my_health_change),
+            'opponent_health_change' : int(opponent_health_change),
+            'card_draw' : int(card_draw)
+        }
 
-    if len(deck) < 30:
+        if card['location'] == 0:     # card in player hand
+            player_hand+= [card]
+        elif card['location'] == 1:   # card in player's battlefield
+            player_battefield += [card]
+        elif card['location'] == -1:  # card in player hand
+            opponent_battlefield += [card]
+        else:                         # something wrong happen
+            pass
+
+
+    # draft phase
+    if len(draft) < 30:
         print("PICK", 0)
 
-        deck += [{}]
+        draft += [card]
         continue
 
+    # battle phase
+
+    
+    # send a PASS in the end to prevent crash if no action was made
     print("PASS")
