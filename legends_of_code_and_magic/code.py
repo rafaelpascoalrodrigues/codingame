@@ -69,7 +69,12 @@ while True:
                 print("SUMMON", card['instance_id'], ";", end="")
 
     for card in player_battlefield:
-        print("ATTACK", card['instance_id'], "-1", ";", end="")
+        target = -1
+        for enemy in opponent_battlefield:
+            if enemy['abilities']['guard']:
+                target = enemy['instance_id']
+        print("ATTACK", card['instance_id'], target, ";", end="")
+
 
 
     # send a PASS in the end to prevent crash if no action was made
