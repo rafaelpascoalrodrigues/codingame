@@ -49,11 +49,16 @@ while True:
 
     # battle phase
     for card in player_hand:
+        # battlefield card limit
+        if len(player_battlefield) >= 6:
+            print("can't summon more cards.", file=sys.stderr)
+            break
+
         if card['cost'] <= player_mana:
             if card['card_type'] == 0:
                 player_mana -= card['cost']
                 print("SUMMON", card['instance_id'], ";", end="")
 
-    
+
     # send a PASS in the end to prevent crash if no action was made
     print("PASS")
