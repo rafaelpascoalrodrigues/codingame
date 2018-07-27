@@ -1,9 +1,8 @@
 import sys
 import math
 
-# Auto-generated code below aims at helping you parse
-# the standard input according to the problem statement.
 
+deck = []
 
 # game loop
 while True:
@@ -24,7 +23,10 @@ while True:
         opponent_health_change = int(opponent_health_change)
         card_draw = int(card_draw)
 
-    # Write an action using print
-    # To debug: print("Debug messages...", file=sys.stderr)
+    if len(deck) < 30:
+        print("PICK", 0)
+
+        deck += [{}]
+        continue
 
     print("PASS")
