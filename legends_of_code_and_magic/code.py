@@ -142,8 +142,10 @@ while True:
     for card in player_battlefield:
         target = -1
         for enemy in opponent_battlefield:
-            if enemy['abilities']['guard']:
+            if enemy['abilities']['guard'] and enemy['defense'] > 0:
                 target = enemy['instance_id']
+                if not enemy['abilities']['ward']:
+                    enemy['defense'] -= card['attack']
         print("ATTACK", card['instance_id'], target, ";", end="")
 
 
