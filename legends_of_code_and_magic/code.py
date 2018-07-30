@@ -36,7 +36,8 @@ while True:
                 'drain' : True if abilities.find('D') != -1 else False,
                 'lethal' : True if abilities.find('L') != -1 else False,
                 'ward' : True if abilities.find('W') != -1 else False
-            }
+            },
+            'evaluation': 1
         }
 
         if card['location'] == 0:     # card in player hand
@@ -51,9 +52,53 @@ while True:
 
     # draft phase
     if len(draft) < 30:
-        print("PICK", 0)
+        # Evaluate Cards
+        evaluation_show = ""
+        for card in player_hand:
+            evaluation = 1
+            if card['cost'] == 0:
+                evaluation = 1
+            elif card['card_type'] == 0:
+                attack_per_cost = card['attack'] / card['cost']
+                defense_per_cost = card['defense'] / card['cost']
 
-        draft += [card]
+                if card['abilities']['breakthrough']:
+                    pass
+
+                if card['abilities']['charge']:
+                    pass
+
+                if card['abilities']['guard']:
+                    attack_per_cost *= 0.25
+
+                if card['abilities']['drain']:
+                    attack_per_cost *= 0.25
+                    pass
+
+                if card['abilities']['lethal']:
+                    defense_per_cost *= 0.25
+                    pass
+
+                if card['abilities']['ward']:
+                    attack_per_cost *= 0.15
+                    defense_per_cost *= 0.15
+
+                evaluation = attack_per_cost if attack_per_cost > defense_per_cost else defense_per_cost
+
+            card['evaluation'] = evaluation
+            evaluation_show +=  str(evaluation) + ", "
+
+        pick = 0
+        if player_hand[0]['evaluation'] > player_hand[1]['evaluation'] and player_hand[0]['evaluation'] > player_hand[2]['evaluation']:
+            pick = 0
+        elif player_hand[1]['evaluation'] > player_hand[2]['evaluation']:
+            pick = 1
+        else:
+            pick = 2
+        
+        print("PICK", pick, evaluation_show)
+
+        draft += [player_hand[0]]
         continue
 
     # battle phase
