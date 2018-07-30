@@ -69,24 +69,24 @@ while True:
                     pass
 
                 if card['abilities']['guard']:
-                    attack_per_cost *= 0.25
+                    attack_per_cost *= 1.25
 
                 if card['abilities']['drain']:
-                    attack_per_cost *= 0.25
+                    attack_per_cost *= 1.25
                     pass
 
                 if card['abilities']['lethal']:
-                    defense_per_cost *= 0.25
+                    defense_per_cost *= 1.25
                     pass
 
                 if card['abilities']['ward']:
-                    attack_per_cost *= 0.15
-                    defense_per_cost *= 0.15
+                    attack_per_cost *= 1.15
+                    defense_per_cost *= 1.15
 
                 evaluation = attack_per_cost if attack_per_cost > defense_per_cost else defense_per_cost
 
             card['evaluation'] = evaluation
-            evaluation_show +=  str(evaluation) + ", "
+            
 
         pick = 0
         if player_hand[0]['evaluation'] > player_hand[1]['evaluation'] and player_hand[0]['evaluation'] > player_hand[2]['evaluation']:
@@ -96,7 +96,7 @@ while True:
         else:
             pick = 2
         
-        print("PICK", pick, evaluation_show)
+        print("PICK", pick, [x['evaluation'] for x in player_hand])
 
         draft += [player_hand[0]]
         continue
