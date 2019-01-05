@@ -204,7 +204,7 @@ def evaluate_card(card):
             attack_per_cost *= 1.15
             defense_per_cost *= 1.15
 
-    evaluation = attack_per_cost if attack_per_cost > defense_per_cost else defense_per_cost
+        evaluation = attack_per_cost if attack_per_cost > defense_per_cost else defense_per_cost
 
     return evaluation
 
