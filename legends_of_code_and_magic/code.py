@@ -2,146 +2,65 @@ import sys
 import math
 
 
-draft = []
-
-# game loop
-while True:
-    player_hand = []
-    player_battlefield = []
-    opponent_battlefield = []
+DRAFT_TURNS = 30
 
 
-    for i in range(2):
-        player_health, player_mana, player_deck, player_rune = [int(j) for j in input().split()]
-    opponent_hand = int(input())
-    card_count = int(input())
-    for i in range(card_count):
-        card_number, instance_id, location, card_type, cost, attack, defense, abilities, my_health_change, opponent_health_change, card_draw = input().split()
-        card = {
-            'card_number' : int(card_number),
-            'instance_id' : int(instance_id),
-            'location' : int(location),
-            'card_type' : int(card_type),
-            'cost' : int(cost),
-            'attack' : int(attack),
-            'defense' : int(defense),
-            'player_health_change' : int(my_health_change),
-            'opponent_health_change' : int(opponent_health_change),
-            'card_draw' : int(card_draw),
-            'abilities' : {
-                'string' : abilities,
-                'breakthrough' : True if abilities.find('B') != -1 else False,
-                'charge' : True if abilities.find('C') != -1 else False,
-                'guard' : True if abilities.find('G') != -1 else False,
-                'drain' : True if abilities.find('D') != -1 else False,
-                'lethal' : True if abilities.find('L') != -1 else False,
-                'ward' : True if abilities.find('W') != -1 else False
-            },
-            'evaluation': 1
-        }
-
-        if card['location'] == 0:     # card in player hand
-            player_hand += [card]
-        elif card['location'] == 1:   # card in player's battlefield
-            player_battlefield += [card]
-        elif card['location'] == -1:  # card in player hand
-            opponent_battlefield += [card]
-        else:                         # something wrong happen
-            pass
+def main():
+    draft(DRAFT_TURNS)
+    game_loop()
 
 
-    # draft phase
-    if len(draft) < 30:
-        # Evaluate Cards
-        evaluation_show = ""
-        for card in player_hand:
-            evaluation = 1
-            if card['cost'] == 0:
-                evaluation = 1
-            elif card['card_type'] == 0:
-                attack_per_cost = card['attack'] / card['cost']
-                defense_per_cost = card['defense'] / card['cost']
+def game_loop():
+    while True:
+        players = get_players()
+        board = get_board()
 
-                if card['abilities']['breakthrough']:
-                    pass
+        play(players, board)
 
-                if card['abilities']['charge']:
-                    pass
+        # send a PASS in the end to prevent crash if no action was made
+        print("PASS")
 
-                if card['abilities']['guard']:
-                    attack_per_cost *= 1.25
 
-                if card['abilities']['drain']:
-                    attack_per_cost *= 1.25
-                    pass
-
-                if card['abilities']['lethal']:
-                    defense_per_cost *= 1.25
-                    pass
-
-                if card['abilities']['ward']:
-                    attack_per_cost *= 1.15
-                    defense_per_cost *= 1.15
-
-                evaluation = attack_per_cost if attack_per_cost > defense_per_cost else defense_per_cost
-
-            card['evaluation'] = evaluation
-            
-
-        pick = 0
-        if player_hand[0]['evaluation'] > player_hand[1]['evaluation'] and player_hand[0]['evaluation'] > player_hand[2]['evaluation']:
-            pick = 0
-        elif player_hand[1]['evaluation'] > player_hand[2]['evaluation']:
-            pick = 1
-        else:
-            pick = 2
-        
-        print("PICK", pick, [x['evaluation'] for x in player_hand])
-
-        draft += [player_hand[0]]
-        continue
-
-    # battle phase
-
+def play(players, board):
     # use itens
-    for card in player_hand:
-        if card['cost'] <= player_mana:
+    for card in board['player_hand']:
+        if card['cost'] <= players['player']['mana']:
 
             # green item
             if card['card_type'] == 1:
-                if len(player_battlefield) > 0 and player_battlefield[0]['card_type'] == 0:
-                    player_mana -= card['cost']
-                    print("USE", card['instance_id'], player_battlefield[0]['instance_id'] ,";", end="")
+                if len(board['player_battlefield']) > 0 and board['player_battlefield'][0]['card_type'] == 0:
+                    players['player']['mana'] -= card['cost']
+                    print("USE", card['instance_id'], board['player_battlefield'][0]['instance_id'] ,";", end="")
 
             # red item
             elif card['card_type'] == 2:
-                if len(opponent_battlefield) > 0 and opponent_battlefield[0]['card_type'] == 0:
-                    player_mana -= card['cost']
-                    print("USE", card['instance_id'], opponent_battlefield[0]['instance_id'] ,";", end="")
+                if len(board['opponent_battlefield']) > 0 and board['opponent_battlefield'][0]['card_type'] == 0:
+                    players['player']['mana'] -= card['cost']
+                    print("USE", card['instance_id'], board['opponent_battlefield'][0]['instance_id'] ,";", end="")
 
             # blue item
             elif card['card_type'] == 3:
-                player_mana -= card['cost']
+                players['player']['mana'] -= card['cost']
                 print("USE", card['instance_id'], "-1" ,";", end="")
 
 
     # summon creatures
-    for card in player_hand:
+    for card in  board['player_hand']:
         # battlefield card limit
-        if len(player_battlefield) >= 6:
+        if len(board['player_battlefield']) >= 6:
             print("can't summon more cards.", file=sys.stderr)
             break
 
-        if card['cost'] <= player_mana:
+        if card['cost'] <= players['player']['mana']:
             if card['card_type'] == 0:
-                player_mana -= card['cost']
+                players['player']['mana'] -= card['cost']
                 print("SUMMON", card['instance_id'], ";", end="")
 
 
     # attack
-    for card in player_battlefield:
+    for card in  board['player_battlefield']:
         target = -1
-        for enemy in opponent_battlefield:
+        for enemy in board['opponent_battlefield']:
             if enemy['abilities']['guard'] and enemy['defense'] > 0:
                 target = enemy['instance_id']
                 if not enemy['abilities']['ward']:
@@ -149,6 +68,147 @@ while True:
         print("ATTACK", card['instance_id'], target, ";", end="")
 
 
+def draft(cards_to_pick):
+    for _ in range(cards_to_pick):
+        get_players()
+        board = get_board()
 
-    # send a PASS in the end to prevent crash if no action was made
-    print("PASS")
+        pick = 0
+        eval0 = board['player_hand'][0]['evaluation']
+        eval1 = board['player_hand'][1]['evaluation']
+        eval2 = board['player_hand'][2]['evaluation']
+        if eval0 > eval1 and eval0 > eval2:
+            pick = 0
+        elif eval1 > eval2:
+            pick = 1
+        else:
+            pick = 2
+        
+        print("PICK", pick, [x['evaluation'] for x in board['player_hand']])
+
+
+def get_players():
+    players = {
+        'player'   : get_player(),
+        'opponent' : get_player(),
+    }
+
+    input_splitted = input().split()
+    players['opponent']['hand']    = int(input_splitted[0])
+    players['opponent']['actions'] = int(input_splitted[1])
+
+    for _ in range(players['opponent']['actions']):
+        input()
+
+    return players
+
+
+def get_player():
+    input_splitted = input().split()
+
+    return {
+        'health'  : int(input_splitted[0]),
+        'mana'    : int(input_splitted[1]),
+        'deck'    : int(input_splitted[2]),
+        'rune'    : int(input_splitted[3]),
+        'draw'    : int(input_splitted[4]),
+
+        'hand'    : -1,
+        'actions' : -1,
+    }
+
+
+def get_board():
+    board = {
+        'card_count'           : int(input()),
+        'player_hand'          : [],
+        'player_battlefield'   : [],
+#       'opponent_hand'        : [],  # no information about opponent's hand
+        'opponent_battlefield' : [],
+    }
+
+    for _ in range(board['card_count']):
+        card = get_card()
+
+        if card['location'] == 0:     # card in player hand
+            board['player_hand'] += [card]
+        elif card['location'] == 1:   # card in player's side of battlefield
+            board['player_battlefield'] += [card]
+        elif card['location'] == -1:  # card in opponent's side of battlefield
+            board['opponent_battlefield'] += [card]
+        else:                         # something wrong happen
+            pass
+
+    return board
+
+
+def get_card():
+    input_splitted = input().split()
+
+    card = {
+        'evaluation'             : 1,
+        'card_number'            : int(input_splitted[0]),
+        'instance_id'            : int(input_splitted[1]),
+        'location'               : int(input_splitted[2]),
+        'card_type'              : int(input_splitted[3]),
+        'cost'                   : int(input_splitted[4]),
+        'attack'                 : int(input_splitted[5]),
+        'defense'                : int(input_splitted[6]),
+        'player_health_change'   : int(input_splitted[8]),
+        'opponent_health_change' : int(input_splitted[9]),
+        'card_draw'              : int(input_splitted[10]),
+        'abilities'              : {
+            'string'       : input_splitted[7],
+            'breakthrough' : True if input_splitted[7].find('B') != -1 else False,
+            'charge'       : True if input_splitted[7].find('C') != -1 else False,
+            'guard'        : True if input_splitted[7].find('G') != -1 else False,
+            'drain'        : True if input_splitted[7].find('D') != -1 else False,
+            'lethal'       : True if input_splitted[7].find('L') != -1 else False,
+            'ward'         : True if input_splitted[7].find('W') != -1 else False
+        },
+    }
+
+    card['evaluation'] = evaluate_card(card)
+
+    return card
+
+
+def evaluate_card(card):
+    evaluation = 1
+
+    if card['cost'] == 0:
+        evaluation = 1
+
+    elif card['card_type'] == 0:
+        attack_per_cost  = card['attack']  / card['cost']
+        defense_per_cost = card['defense'] / card['cost']
+
+        if card['abilities']['breakthrough']:
+            pass
+
+        if card['abilities']['charge']:
+            pass
+
+        if card['abilities']['guard']:
+            attack_per_cost *= 1.25
+
+        if card['abilities']['drain']:
+            attack_per_cost *= 1.25
+            pass
+
+        if card['abilities']['lethal']:
+            defense_per_cost *= 1.25
+            pass
+
+        if card['abilities']['ward']:
+            attack_per_cost *= 1.15
+            defense_per_cost *= 1.15
+
+    evaluation = attack_per_cost if attack_per_cost > defense_per_cost else defense_per_cost
+
+    return evaluation
+
+
+# Start the execution if it's the main script
+if __name__ == "__main__":
+    main()
